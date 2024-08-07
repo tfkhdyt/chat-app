@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/tfkhdyt/chat-app/server/router"
 	"github.com/tfkhdyt/chat-app/server/user"
 	"github.com/tfkhdyt/fiber-toolbox/exception"
@@ -15,6 +16,8 @@ func NewFiberServer(lc fx.Lifecycle, userController user.UserController) *fiber.
 	app := fiber.New(fiber.Config{
 		ErrorHandler: exception.NewErrorHandler(),
 	})
+
+	app.Use(logger.New())
 
 	router.RegisterRouter(app, userController)
 
