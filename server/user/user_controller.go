@@ -5,19 +5,15 @@ import (
 	"github.com/tfkhdyt/fiber-toolbox/validation"
 )
 
-type UserController interface {
-	Create(ctx *fiber.Ctx) error
-}
-
-type userController struct {
+type UserController struct {
 	service UserService
 }
 
-func NewUserController(service UserService) UserController {
-	return &userController{service: service}
+func NewUserController(service UserService) *UserController {
+	return &UserController{service: service}
 }
 
-func (c *userController) Create(ctx *fiber.Ctx) error {
+func (c *UserController) Create(ctx *fiber.Ctx) error {
 	user := new(UserRegisterDTO)
 	if err := validation.ValidateBody(ctx, user); err != nil {
 		return err

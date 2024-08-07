@@ -6,20 +6,21 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/tfkhdyt/chat-app/server/auth"
 	"github.com/tfkhdyt/chat-app/server/router"
 	"github.com/tfkhdyt/chat-app/server/user"
 	"github.com/tfkhdyt/fiber-toolbox/exception"
 	"go.uber.org/fx"
 )
 
-func NewFiberServer(lc fx.Lifecycle, userController user.UserController) *fiber.App {
+func NewFiberServer(lc fx.Lifecycle, userController *user.UserController, authController *auth.AuthController) *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: exception.NewErrorHandler(),
 	})
 
 	app.Use(logger.New())
 
-	router.RegisterRouter(app, userController)
+	router.RegisterRouter(app, userController, authController)
 
 	lc.Append(fx.Hook{
 		OnStart: func(_ context.Context) error {

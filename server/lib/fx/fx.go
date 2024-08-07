@@ -1,6 +1,7 @@
 package fx
 
 import (
+	"github.com/tfkhdyt/chat-app/server/auth"
 	"github.com/tfkhdyt/chat-app/server/lib/fiber"
 	"github.com/tfkhdyt/chat-app/server/lib/gorm"
 	"github.com/tfkhdyt/chat-app/server/user"
@@ -16,7 +17,11 @@ func NewFx() *fx.App {
 			// user
 			fx.Annotate(user.NewUserRepository, fx.As(new(user.UserRepo))),
 			fx.Annotate(user.NewUserService, fx.As(new(user.UserService))),
-			fx.Annotate(user.NewUserController, fx.As(new(user.UserController))),
+			user.NewUserController,
+
+			// auth
+			fx.Annotate(auth.NewAuthService, fx.As(new(auth.AuthService))),
+			auth.NewAuthController,
 		),
 		fx.Invoke(fiber.NewFiberServer),
 	)

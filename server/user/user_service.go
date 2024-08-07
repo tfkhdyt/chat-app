@@ -1,17 +1,13 @@
 package user
 
 import (
-	"crypto/x509"
-	"encoding/base64"
-
 	"github.com/tfkhdyt/chat-app/server/lib/encryption"
-	"github.com/tfkhdyt/fiber-toolbox/exception"
 	"github.com/tfkhdyt/fiber-toolbox/hash"
 	"github.com/tfkhdyt/fiber-toolbox/response"
 )
 
 type UserService interface {
-	create(user *UserRegisterDTO) (*response.MessageResponse, error)
+	create(payload *UserRegisterDTO) (*response.MessageResponse, error)
 }
 
 type userService struct {
@@ -39,16 +35,18 @@ func (s *userService) create(user *UserRegisterDTO) (*response.MessageResponse, 
 
 	privateKey, publicKey, err := encryption.GenerateKeys()
 	if err != nil {
-		return nil, exception.NewInternalServerError("failed to generate keys", err)
+		return nil, err
 	}
 
 	encryptedPrivateKey, err := encryption.EncryptPrivateKey(privateKey)
 	if err != nil {
-		return nil, exception.NewInternalServerError("failed to encrypt private key", err)
+		return nil, err
 	}
 
-	publicKeyBytes := x509.MarshalPKCS1PublicKey(publicKey)
-	publicKeyStr := base64.StdEncoding.EncodeToString(publicKeyBytes)
+	publicKeyStr, err := encryption.MarshalPublicKey(publicKey)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := s.repo.create(&User{
 		Username:   user.Username,

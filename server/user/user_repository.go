@@ -9,6 +9,7 @@ type UserRepo interface {
 	create(user *User) error
 	verifyUsernameAvailability(username string) error
 	verifyEmailAvailability(email string) error
+	FindByEmail(email string) (*User, error)
 }
 
 type userRepoPg struct {
@@ -46,4 +47,14 @@ func (r *userRepoPg) verifyEmailAvailability(email string) error {
 	}
 
 	return nil
+}
+
+func (r *userRepoPg) FindByEmail(email string) (*User, error) {
+	var user User
+
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, exception.NewNotFoundError("user not found", err)
+	}
+
+	return &user, nil
 }
